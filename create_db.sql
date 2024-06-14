@@ -25,8 +25,8 @@ go
 sp_configure 'enable functionality group', 1
 go
 
--- configure max memory on SAP ASE for 12G
-sp_configure 'max memory', 6291456
+-- configure max memory on SAP ASE for 13G
+sp_configure 'max memory', 6815744
 go
 sp_cacheconfig 'default data cache', '10G'
 go
@@ -37,6 +37,20 @@ alter thread pool syb_default_pool with thread count = 4
 go
 sp_configure "lock scheme", 0, datarows
 go
+sp_configure "user connections",256
+go
+sp_configure "statement cache size", 102400
+go
+sp_configure "literal autoparam", 1
+go
+sp_configure "number of open objects",2000 -- max resue 2484
+go
+sp_configure "procedure cache size",164000
+go
+
+
+
+
 
 
 

@@ -70,9 +70,9 @@ public class TpccStatements {
         pStmts[35]  = prepareStatement("SELECT c_discount, c_last, c_credit FROM customer WHERE c_w_id = ? AND c_d_id = ? AND c_id = ?");
         pStmts[36]  = prepareStatement("SELECT w_tax FROM warehouse WHERE w_id = ?");
 
-        //for (int i = 0; i < pStmts.length; i++) {
-        //    pStmts[i].setFetchSize(fetchSize);
-        //}
+//        for (int i = 0; i < pStmts.length; i++) {
+//            pStmts[i].setFetchSize(fetchSize);
+//        }
 
     }
 

@@ -363,7 +363,7 @@ public class NewOrder implements TpccConstants {
                             s_dist_10 = rs.getString(12);
 
                         // print row data not using debug
-                        logger.info("s_quantity: " + s_quantity + " s_data: " + s_data + " s_dist_01: " + s_dist_01 + " s_dist_02: " + s_dist_02 + " s_dist_03: " + s_dist_03 + " s_dist_04: " + s_dist_04 + " s_dist_05: " + s_dist_05 + " s_dist_06: " + s_dist_06 + " s_dist_07: " + s_dist_07 + " s_dist_08: " + s_dist_08 + " s_dist_09: " + s_dist_09 + " s_dist_10: " + s_dist_10);
+                        //logger.info("s_quantity: " + s_quantity + " s_data: " + s_data + " s_dist_01: " + s_dist_01 + " s_dist_02: " + s_dist_02 + " s_dist_03: " + s_dist_03 + " s_dist_04: " + s_dist_04 + " s_dist_05: " + s_dist_05 + " s_dist_06: " + s_dist_06 + " s_dist_07: " + s_dist_07 + " s_dist_08: " + s_dist_08 + " s_dist_09: " + s_dist_09 + " s_dist_10: " + s_dist_10);
 
 
                         } else {
