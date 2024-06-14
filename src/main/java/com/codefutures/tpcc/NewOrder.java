@@ -1,9 +1,12 @@
 package com.codefutures.tpcc;
 
-import java.sql.*;
-
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 
 public class NewOrder implements TpccConstants {
 
@@ -358,6 +361,16 @@ public class NewOrder implements TpccConstants {
                             s_dist_08 = rs.getString(10);
                             s_dist_09 = rs.getString(11);
                             s_dist_10 = rs.getString(12);
+
+                        // print row data not using debug
+                        logger.info("s_quantity: " + s_quantity + " s_data: " + s_data + " s_dist_01: " + s_dist_01 + " s_dist_02: " + s_dist_02 + " s_dist_03: " + s_dist_03 + " s_dist_04: " + s_dist_04 + " s_dist_05: " + s_dist_05 + " s_dist_06: " + s_dist_06 + " s_dist_07: " + s_dist_07 + " s_dist_08: " + s_dist_08 + " s_dist_09: " + s_dist_09 + " s_dist_10: " + s_dist_10);
+
+
+                        } else {
+                            if (DEBUG) {
+                                logger.debug("No stock found for item id " + ol_i_id + " and warehouse id " + ol_supply_w_id);
+                            }
+                            throw new AbortedTransactionException();
                         }
                     }
 

@@ -1,5 +1,8 @@
 package com.codefutures.tpcc;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -7,9 +10,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.util.Properties;
-
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 
 
 public class TpccLoad implements TpccConstants {
@@ -220,6 +220,7 @@ public class TpccLoad implements TpccConstants {
             } catch (SQLException e) {
                 throw new RuntimeException("Could not create statement", e);
             }
+            /*
             try {
                 stmt.execute("SET UNIQUE_CHECKS=0");
             } catch (SQLException e) {
@@ -231,7 +232,7 @@ public class TpccLoad implements TpccConstants {
             } catch (SQLException e) {
                 throw new RuntimeException("Could not set foreign key checks error", e);
             }
-
+            */
             loadConfig.setLoadType(TpccLoadConfig.LoadType.JDBC_STATEMENT);
             loadConfig.setConn(conn);
         } else {

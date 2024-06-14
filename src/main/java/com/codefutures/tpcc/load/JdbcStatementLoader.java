@@ -35,12 +35,13 @@ public class JdbcStatementLoader implements RecordLoader {
     }
 
     public void load(Record r) throws Exception {
-        if (currentBatchSize == 0) {
+        //if (currentBatchSize == 0) {
             b.append("INSERT ");
             if (ignore) {
                 b.append("IGNORE ");
             }
-            b.append("INTO `").append(tableName).append("` (");
+            b.append("INTO ").append(tableName).append(" (");
+            //b.append("INTO `").append(tableName).append("` (");
             for (int i = 0; i < columnName.length; i++) {
                 if (i > 0) {
                     b.append(',');
@@ -48,12 +49,15 @@ public class JdbcStatementLoader implements RecordLoader {
                 b.append(columnName[i].trim());
             }
             b.append(") VALUES ");
-        } else {
-            b.append(',');
-        }
+
+        //} else {
+        //    b.append(',');
+        //}
         b.append('(');
         write(b, r, ",");
         b.append(')');
+        // ad next line
+        b.append('\n');
 
         if (++currentBatchSize == maxBatchSize) {
             executeBulkInsert();
