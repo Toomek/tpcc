@@ -1,11 +1,9 @@
 package com.codefutures.tpcc;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.sql.*;
 
 public class Payment implements TpccConstants {
     private static final Logger logger = LoggerFactory.getLogger(Driver.class);
@@ -30,7 +28,7 @@ public class Payment implements TpccConstants {
     ) {
         try {
             // Start a transaction.
-            pStmts.setAutoCommit(false);
+            pStmts.setAutoCommit(true);
             if (DEBUG) logger.debug("Transaction:	PAYMENT");
             int w_id = w_id_arg;
             int d_id = d_id_arg;
@@ -90,7 +88,12 @@ public class Payment implements TpccConstants {
                 pStmts.getStatement(9).setFloat(1, h_amount);
                 pStmts.getStatement(9).setInt(2, w_id);
                 if (TRACE) logger.trace("UPDATE warehouse SET w_ytd = w_ytd + " + h_amount + " WHERE w_id = " + w_id);
+                pStmts.getStatement(9).getConnection().setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
                 pStmts.getStatement(9).executeUpdate();
+                //commit update
+                pStmts.getStatement(9).getConnection().commit();
+
+
 
             } catch (SQLException e) {
                 logger.error("UPDATE warehouse SET w_ytd = w_ytd + " + h_amount + " WHERE w_id = " + w_id, e);
@@ -103,9 +106,13 @@ public class Payment implements TpccConstants {
 
             try {
                 pStmts.getStatement(10).setInt(1, w_id);
+
                 if (TRACE)
                     logger.trace("SELECT w_street_1, w_street_2, w_city, w_state, w_zip, w_name FROM warehouse WHERE w_id = " + w_id);
-                ResultSet rs = pStmts.getStatement(10).executeQuery();
+                PreparedStatement pstmt100;
+                pstmt100 = pStmts.getStatement(10);
+                pstmt100.getConnection().setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+                ResultSet rs = pstmt100.executeQuery();
                 if (rs.next()) {
                     w_street_1 = rs.getString(1);
                     w_street_2 = rs.getString(2);
@@ -123,22 +130,6 @@ public class Payment implements TpccConstants {
             }
 
             proceed = 3;
-            //Get prepared statement
-            //"UPDATE district SET d_ytd = d_ytd + ? WHERE d_w_id = ? AND d_id = ?"
-            try {
-                pStmts.getStatement(11).setFloat(1, h_amount);
-                pStmts.getStatement(11).setInt(2, w_id);
-                pStmts.getStatement(11).setInt(3, d_id);
-                if (TRACE)
-                    logger.trace("UPDATE district SET d_ytd = d_ytd + " + h_amount + " WHERE d_w_id = " + w_id + " AND d_id = " + d_id);
-                pStmts.getStatement(11).executeUpdate();
-
-            } catch (SQLException e) {
-                logger.error("UPDATE district SET d_ytd = d_ytd + " + h_amount + " WHERE d_w_id = " + w_id + " AND d_id = " + d_id, e);
-                throw new Exception("Payment update transaction error", e);
-            }
-
-            proceed = 4;
             //Get prepared statement
             //"SELECT d_street_1, d_street_2, d_city, d_state, d_zip, d_name FROM district WHERE d_w_id = ? AND d_id = ?"
 
@@ -166,6 +157,25 @@ public class Payment implements TpccConstants {
             if (byname >= 1) {
 
                 c_last = c_last_arg;
+
+
+                proceed = 4;
+                //Get prepared statement
+                //"UPDATE district SET d_ytd = d_ytd + ? WHERE d_w_id = ? AND d_id = ?"
+                try {
+                    pStmts.getStatement(11).setFloat(1, h_amount);
+                    pStmts.getStatement(11).setInt(2, w_id);
+                    pStmts.getStatement(11).setInt(3, d_id);
+                    if (TRACE)
+                        logger.trace("UPDATE district SET d_ytd = d_ytd + " + h_amount + " WHERE d_w_id = " + w_id + " AND d_id = " + d_id);
+                    pStmts.getStatement(11).getConnection().setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+                    pStmts.getStatement(11).executeUpdate();
+                    pStmts.getStatement(11).getConnection().commit();
+
+                } catch (SQLException e) {
+                    logger.error("UPDATE district SET d_ytd = d_ytd + " + h_amount + " WHERE d_w_id = " + w_id + " AND d_id = " + d_id, e);
+                    throw new Exception("Payment update transaction error", e);
+                }
 
                 proceed = 5;
                 //Get prepared statement
@@ -230,7 +240,7 @@ public class Payment implements TpccConstants {
                 pStmts.getStatement(15).setInt(3, c_id);
                 if (TRACE)
                     logger.trace("SELECT c_first, c_middle, c_last, c_street_1, c_street_2, c_city, c_state, c_zip, c_phone, c_credit, c_credit_lim, c_discount, c_balance, c_since FROM customer " +
-                            "WHERE c_w_id = " + c_w_id + " AND c_d_id = " + c_d_id + " AND c_id = " + c_id + " FOR UPDATE");
+                            "WHERE c_w_id = " + c_w_id + " AND c_d_id = " + c_d_id + " AND c_id = " + c_id + " "); //FOR UPDATE");
                 ResultSet rs = pStmts.getStatement(15).executeQuery();
                 if (rs.next()) {
                     c_first = rs.getString(1);
@@ -253,7 +263,7 @@ public class Payment implements TpccConstants {
 
             } catch (SQLException e) {
                 logger.error("SELECT c_first, c_middle, c_last, c_street_1, c_street_2, c_city, c_state, c_zip, c_phone, c_credit, c_credit_lim, c_discount, c_balance, c_since FROM customer " +
-                        "WHERE c_w_id = " + c_w_id + " AND c_d_id = " + c_d_id + " AND c_id = " + c_id + " FOR UPDATE", e);
+                        "WHERE c_w_id = " + c_w_id + " AND c_d_id = " + c_d_id + " AND c_id = " + c_id + " ", e); // FOR UPDATE", e);
                 throw new Exception("Payment select transaction error", e);
             }
 
