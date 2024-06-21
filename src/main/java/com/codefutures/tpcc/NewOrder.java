@@ -147,7 +147,7 @@ public class NewOrder implements TpccConstants {
                     pstmt0.setInt(column++, w_id);
                     pstmt0.setInt(column++, d_id);
                     pstmt0.setInt(column++, c_id);
-                    pstmt0.getConnection().setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+                    //pstmt0.getConnection().setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
                     if (TRACE)
                         logger.trace("SELECT c_discount, c_last, c_credit, w_tax FROM customer, warehouse WHERE w_id = " + w_id + " AND c_w_id = " + w_id + " AND c_d_id = " + d_id + " AND c_id = " + c_id);
                     try (ResultSet rs = pstmt0.executeQuery()) {
@@ -172,11 +172,11 @@ public class NewOrder implements TpccConstants {
                     pstmt35.setInt(column++, w_id);
                     pstmt35.setInt(column++, d_id);
                     pstmt35.setInt(column++, c_id);
-                    pstmt35.getConnection().setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+                    //pstmt35.getConnection().setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
                     //SELECT w_tax FROM warehouse WHERE w_id = ?
                     final PreparedStatement pstmt36 = pStmts.getStatement(36);
                     pstmt36.setInt(1, w_id);
-                    pstmt36.getConnection().setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+                    //pstmt36.getConnection().setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
 
                     if (TRACE)
                         logger.trace("SELECT c_discount, c_last, c_credit FROM customer WHERE c_w_id = " + w_id + " AND c_d_id = " + d_id + " AND c_id = " + c_id);
@@ -195,6 +195,9 @@ public class NewOrder implements TpccConstants {
                             w_tax = rs1.getFloat(1);
                         }
                     }
+
+                    pstmt35.getConnection().commit();
+
                 } catch (SQLException e) {
                     logger.error("SELECT c_discount, c_last, c_credit FROM customer WHERE c_w_id = " + w_id + " AND c_d_id = " + d_id + " AND c_id = " + c_id, e);
                     throw new Exception("NewOrder (join = false) select transaction error", e);
@@ -207,12 +210,13 @@ public class NewOrder implements TpccConstants {
                 final PreparedStatement pstmt1 = pStmts.getStatement(1);
                 pstmt1.setInt(1, d_id);
                 pstmt1.setInt(2, w_id);
-                pstmt1.getConnection().setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+                pstmt1.getConnection().setTransactionIsolation(4);
                 if (TRACE)
                     logger.trace("SELECT d_next_o_id, d_tax FROM district WHERE d_id = " + d_id + "  AND d_w_id = " + w_id + " "); //FOR UPDATE");
                 try (ResultSet rs = pstmt1.executeQuery()) {
                     if (rs.next()) {
-                        d_next_o_id = rs.getInt(1) + 1000 + t_num; // dodałem 1000 + t_num aby nie blokowały sie sesje Tomasz Romanowski
+                        //d_next_o_id = rs.getInt(1) + 1000 + t_num; // dodałem 1000 + t_num aby nie blokowały sie sesje Tomasz Romanowski
+                        d_next_o_id = rs.getInt(1) + 1;
                         d_tax = rs.getFloat(2);
                     } else {
                         logger.error("Failed to obtain d_next_o_id. No results to query: "
@@ -245,9 +249,10 @@ public class NewOrder implements TpccConstants {
                 throw new Exception("NewOrder update transaction error", e);
             }
 
-
-
             o_id = d_next_o_id;
+
+            // show the order id
+            //logger.info("Order ID: " + o_id + "/"+d_next_o_id+"  for thread " + t_num);
 
             //Get prepared statement
             //"INSERT INTO orders (o_id, o_d_id, o_w_id, o_c_id, o_entry_d, o_ol_cnt, o_all_local) VALUES(?, ?, ?, ?, ?, ?, ?)"
