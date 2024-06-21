@@ -22,6 +22,10 @@ sp_dboption demodb, 'ddl in tran', true
 go
 sp_dboption demodb, 'allow nulls by default', true
 go
+use demodb
+go
+sp_logiosize "2"  -- po 8k było zpowolnienie (wracam na domyslne 2k)
+go
 
 
 sp_configure 'enable functionality group', 1
@@ -32,6 +36,11 @@ sp_configure 'max memory', 6815744
 go
 sp_cacheconfig 'default data cache', '4G'
 go
+sp_cacheconfig "default data cache", "cache_partition=4"
+go
+sp_poolconfig 'default data cache', "512M", "8K"
+go
+
 -- configure 4 threads for SAP ASE
 sp_configure 'max online engines', 4
 go
@@ -52,6 +61,10 @@ go
 sp_configure "procedure cache size",164000
 go
 sp_configure "number of network tasks", 4
+go
+sp_configure 'user log cache size' --> jest domyslnie na 8k (mimo ze pagesize 2k)
+go
+sp_configure 'session tempdb log cache size', 8192
 go
 
 
