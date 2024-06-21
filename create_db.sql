@@ -51,6 +51,9 @@ sp_configure "number of open objects",2000 -- max resue 2484
 go
 sp_configure "procedure cache size",164000
 go
+sp_configure "number of network tasks", 4
+go
+
 
 ### imRS
 
