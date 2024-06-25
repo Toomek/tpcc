@@ -6,7 +6,11 @@ disk init name = 'demodb_01_dat', physname = '/opt/data/ase/PRIMARY_DS_demodb_01
 go
 disk init name = 'demodb_01_log', physname = '/opt/data/ase/PRIMARY_DS_demodb_01_dev.log', size = '512M'
 go
--- drop database demodb
+
+use master
+go
+drop database demodb
+go
 
 create database demodb
 on demodb_01_dat = '1024M'
@@ -24,7 +28,11 @@ sp_dboption demodb, 'allow nulls by default', true
 go
 use demodb
 go
-sp_logiosize "2"  -- po 8k było zpowolnienie (wracam na domyslne 2k)
+sp_logiosize "8"
+go
+use tempdb
+go
+sp_logiosize "8"
 go
 
 
@@ -38,7 +46,7 @@ sp_cacheconfig 'default data cache', '4G'
 go
 sp_cacheconfig "default data cache", "cache_partition=4"
 go
-sp_poolconfig 'default data cache', "512M", "8K"
+sp_poolconfig 'default data cache', "1G", "8K"
 go
 
 -- configure 4 threads for SAP ASE
@@ -65,6 +73,8 @@ go
 sp_configure 'user log cache size' --> jest domyslnie na 8k (mimo ze pagesize 2k)
 go
 sp_configure 'session tempdb log cache size', 8192
+go
+sp_configure 'heap memory per user', 16384
 go
 
 

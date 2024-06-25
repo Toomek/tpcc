@@ -35,3 +35,4 @@ ALTER TABLE history  ADD CONSTRAINT fkey_history_1 FOREIGN KEY(h_c_w_id,h_c_d_id
 go
 
 
+
