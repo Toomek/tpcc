@@ -4,7 +4,11 @@ use master
 go
 disk init name = 'demodb_01_dat', physname = '/opt/data/ase/PRIMARY_DS_demodb_01_dev.dat', size = '1024M'
 go
+disk init name = 'demodb_02_dat', physname = '/opt/data/ase/PRIMARY_DS_demodb_02_dev.dat', size = '1024M'
+go
 disk init name = 'demodb_01_log', physname = '/opt/data/ase/PRIMARY_DS_demodb_01_dev.log', size = '512M'
+go
+disk init name = 'demodb_02_log', physname = '/opt/data/ase/PRIMARY_DS_demodb_02_dev.log', size = '512M'
 go
 
 use master
@@ -13,9 +17,12 @@ drop database demodb
 go
 
 create database demodb
-on demodb_01_dat = '1024M'
-log on demodb_01_log = '512M'
+on demodb_01_dat = '1024M', demodb_02_dat = '1024M'
+log on demodb_01_log = '512M', demodb_02_log = '512M'
 go
+
+
+
 sp_dboption demodb, 'select into/bulkcopy/pllsort', true
 go
 sp_dboption demodb, 'trunc log on chkpt', true
@@ -42,7 +49,7 @@ go
 -- configure max memory on SAP ASE for 13G
 sp_configure 'max memory', 6815744
 go
-sp_cacheconfig 'default data cache', '4G'
+sp_cacheconfig 'default data cache', '6G'
 go
 sp_cacheconfig "default data cache", "cache_partition=4"
 go
